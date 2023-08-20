@@ -1,76 +1,44 @@
-import {Await} from '@remix-run/react';
-import {Suspense} from 'react';
-import {Aside} from '~/components/Aside';
-import {Footer} from '~/components/Footer';
-import {Header, HeaderMenu} from '~/components/Header';
-import {CartMain} from '~/components/Cart';
-import {
-  PredictiveSearchForm,
-  PredictiveSearchResults,
-} from '~/components/Search';
+import {useLoaderData} from '@remix-run/react';
+import { Header } from './Header';
+import { Footer } from './Footer';
+import { useMatches } from '@remix-run/react';
 
-export function Layout({cart, children = null, footer, header, isLoggedIn}) {
+export function meta() {
+  return [
+    {title: 'Rachel Lopez Photography'},
+    {description: 'A custom storefront powered by Hydrogen'},
+  ];
+}
+
+export function Layout({children}) {
+//   const data = useLoaderData();
+  const data = useMatches();
+  const showHeaderAndFooter = !data[0].params.handle ? true : false;
+
+
   return (
-    <>
-      <CartAside cart={cart} />
-      <SearchAside />
-      <MobileMenuAside menu={header.menu} />
-      <Header header={header} cart={cart} isLoggedIn={isLoggedIn} />
-      <main>{children}</main>
-      <Suspense>
-        <Await resolve={footer}>
-          {(footer) => <Footer menu={footer.menu} />}
-        </Await>
-      </Suspense>
-    </>
+    <div className="flex flex-col min-h-screen antialiased bg-white">
+      {
+        showHeaderAndFooter
+        ? <Header header={data[0].data}/>
+        : null
+      }
+      <main
+        role="main"
+        id="mainContent"
+        className=""
+      >
+          {children}
+        {
+          showHeaderAndFooter
+            ? <Footer img={data[0].data.shop.brand.squareLogo.image} footerTxt={`© ${new Date().getFullYear()} RACHEL LOPEZ | POWERED BY ANTOINE MEDIA LLC`}/>
+            : null
+        }
+      </main>
+    </div>
   );
 }
 
-function CartAside({cart}) {
-  return (
-    <Aside id="cart-aside" heading="CART">
-      <Suspense fallback={<p>Loading cart ...</p>}>
-        <Await resolve={cart}>
-          {(cart) => {
-            return <CartMain cart={cart} layout="aside" />;
-          }}
-        </Await>
-      </Suspense>
-    </Aside>
-  );
-}
 
-function SearchAside() {
-  return (
-    <Aside id="search-aside" heading="SEARCH">
-      <div className="predictive-search">
-        <br />
-        <PredictiveSearchForm>
-          {({fetchResults, inputRef}) => (
-            <div>
-              <input
-                name="q"
-                onChange={fetchResults}
-                onFocus={fetchResults}
-                placeholder="Search"
-                ref={inputRef}
-                type="search"
-              />
-              &nbsp;
-              <button type="submit">Search</button>
-            </div>
-          )}
-        </PredictiveSearchForm>
-        <PredictiveSearchResults />
-      </div>
-    </Aside>
-  );
-}
 
-function MobileMenuAside({menu}) {
-  return (
-    <Aside id="mobile-menu-aside" heading="MENU">
-      <HeaderMenu menu={menu} viewport="mobile" />
-    </Aside>
-  );
-}
+

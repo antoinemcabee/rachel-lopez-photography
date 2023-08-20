@@ -1,11 +1,22 @@
 import {useMatches, NavLink} from '@remix-run/react';
+import { Image } from '@shopify/hydrogen';
 
-export function Footer({menu}) {
+export function Footer({footerTxt, img}) {
   return (
-    <footer className="footer">
-      <FooterMenu menu={menu} />
+    <footer className="">
+      <DeafultFooter text={footerTxt} img={img} />
     </footer>
   );
+}
+
+function DeafultFooter ({data, text, img}) {
+  return (
+    <div className="bg-[#F5F3EC] p-6 w-full h-12 flex justify-between items-center">
+      <p className='text-[.5rem] text-[#A9AD9C]'>{text}</p>
+      <Image width={20} data={img}/>
+    </div>
+  
+  )
 }
 
 function FooterMenu({menu}) {
@@ -90,3 +101,5 @@ function activeLinkStyle({isActive, isPending}) {
     color: isPending ? 'grey' : 'white',
   };
 }
+
+

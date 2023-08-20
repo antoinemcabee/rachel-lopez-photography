@@ -1,26 +1,21 @@
-import {defer} from '@shopify/remix-oxygen';
 import {
   Links,
   Meta,
   Outlet,
   Scripts,
-  useMatches,
+  ScrollRestoration,
   useRouteError,
   useLoaderData,
-  ScrollRestoration,
-  isRouteErrorResponse,
 } from '@remix-run/react';
+import styles from './styles/app.css';
 import favicon from '../public/favicon.svg';
-import resetStyles from './styles/reset.css';
-import appStyles from './styles/app.css';
-import {Layout} from '~/components/Layout';
-import tailwindCss from './styles/tailwind.css';
+import {Layout} from './components/Layout';
+import { AnimatePresence } from 'framer-motion';
 
-export function links() {
+
+export const links = () => {
   return [
-    {rel: 'stylesheet', href: tailwindCss},
-    {rel: 'stylesheet', href: resetStyles},
-    {rel: 'stylesheet', href: appStyles},
+    {rel: 'stylesheet', href: styles},
     {
       rel: 'preconnect',
       href: 'https://cdn.shopify.com',
@@ -31,52 +26,16 @@ export function links() {
     },
     {rel: 'icon', type: 'image/svg+xml', href: favicon},
   ];
-}
+};
 
 export async function loader({context}) {
-  const {storefront, session, cart} = context;
-  const customerAccessToken = await session.get('customerAccessToken');
-  const publicStoreDomain = context.env.PUBLIC_STORE_DOMAIN;
-
-  // validate the customer access token is valid
-  const {isLoggedIn, headers} = await validateCustomerAccessToken(
-    customerAccessToken,
-    session,
-  );
-
-  // defer the cart query by not awaiting it
-  const cartPromise = cart.get();
-
-  // defer the footer query (below the fold)
-  const footerPromise = storefront.query(FOOTER_QUERY, {
-    cache: storefront.CacheLong(),
-    variables: {
-      footerMenuHandle: 'footer', // Adjust to your footer menu handle
-    },
-  });
-
-  // await the header query (above the fold)
-  const headerPromise = storefront.query(HEADER_QUERY, {
-    cache: storefront.CacheLong(),
-    variables: {
-      headerMenuHandle: 'main-menu', // Adjust to your header menu handle
-    },
-  });
-
-  return defer(
-    {
-      cart: cartPromise,
-      footer: footerPromise,
-      header: await headerPromise,
-      isLoggedIn,
-      publicStoreDomain,
-    },
-    {headers},
-  );
+  return await context.storefront.query(LAYOUT_QUERY);
 }
 
 export default function App() {
   const data = useLoaderData();
+
+  const {name} = data.shop;
 
   return (
     <html lang="en">
@@ -87,11 +46,13 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Layout {...data}>
+      <AnimatePresence mode='wait'>
+        <Layout logo={name}>
           <Outlet />
         </Layout>
         <ScrollRestoration />
         <Scripts />
+        </AnimatePresence>
       </body>
     </html>
   );
@@ -137,104 +98,34 @@ export function ErrorBoundary() {
   );
 }
 
-/**
- * Validates the customer access token and returns a boolean and headers
- * @see https://shopify.dev/docs/api/storefront/latest/objects/CustomerAccessToken
- *
- * @example
- * ```ts
- * //
- * const {isLoggedIn, headers} = await validateCustomerAccessToken(
- *  customerAccessToken,
- *  session,
- *  );
- *  ```
- *  */
-async function validateCustomerAccessToken(customerAccessToken, session) {
-  let isLoggedIn = false;
-  const headers = new Headers();
-  if (!customerAccessToken?.accessToken || !customerAccessToken?.expiresAt) {
-    return {isLoggedIn, headers};
-  }
-  const expiresAt = new Date(customerAccessToken.expiresAt);
-  const dateNow = new Date();
-  const customerAccessTokenExpired = expiresAt < dateNow;
-  if (customerAccessTokenExpired) {
-    session.unset('customerAccessToken');
-    headers.append('Set-Cookie', await session.commit());
-  } else {
-    isLoggedIn = true;
-  }
 
-  return {isLoggedIn, headers};
-}
-
-const MENU_FRAGMENT = `#graphql
-  fragment MenuItem on MenuItem {
-    id
-    resourceId
-    tags
-    title
-    type
-    url
-  }
-  fragment ChildMenuItem on MenuItem {
-    ...MenuItem
-  }
-  fragment ParentMenuItem on MenuItem {
-    ...MenuItem
-    items {
-      ...ChildMenuItem
-    }
-  }
-  fragment Menu on Menu {
-    id
-    items {
-      ...ParentMenuItem
-    }
-  }
-`;
-
-const HEADER_QUERY = `#graphql
-  fragment Shop on Shop {
-    id
+const LAYOUT_QUERY = `#graphql
+  query {
+    shop {
     name
-    description
-    primaryDomain {
-      url
-    }
     brand {
+      squareLogo{
+        image {
+          url
+          altText
+          id
+        }
+      }
       logo {
         image {
           url
+          altText
+          id
         }
+      }
+      
+    }
+  }
+    menu(handle: "main-menu") {
+      title
+      items {
+        title
       }
     }
   }
-  query Header(
-    $country: CountryCode
-    $headerMenuHandle: String!
-    $language: LanguageCode
-  ) @inContext(language: $language, country: $country) {
-    shop {
-      ...Shop
-    }
-    menu(handle: $headerMenuHandle) {
-      ...Menu
-    }
-  }
-  ${MENU_FRAGMENT}
-`;
-
-const FOOTER_QUERY = `#graphql
-  query Footer(
-    $country: CountryCode
-    $footerMenuHandle: String!
-    $language: LanguageCode
-  ) @inContext(language: $language, country: $country) {
-    menu(handle: $footerMenuHandle) {
-      ...Menu
-    }
-  }
-  ${MENU_FRAGMENT}
 `;

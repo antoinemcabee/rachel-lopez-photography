@@ -1,5 +1,6 @@
 import {json} from '@shopify/remix-oxygen';
 import {useLoaderData} from '@remix-run/react';
+import transition from '~/transition';
 
 export const meta = ({data}) => {
   return [{title: `Hydrogen | ${data.page.title}`}];
@@ -23,7 +24,7 @@ export async function loader({params, context}) {
   return json({page});
 }
 
-export default function Page() {
+const Page = () => {
   const {page} = useLoaderData();
 
   return (
@@ -35,6 +36,8 @@ export default function Page() {
     </div>
   );
 }
+
+export default transition(Page);
 
 const PAGE_QUERY = `#graphql
   query Page(
