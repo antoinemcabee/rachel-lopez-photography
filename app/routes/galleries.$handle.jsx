@@ -18,7 +18,12 @@ import { StyledLinkButton } from './_index';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import transition from '~/transition';
-import LogoOval from "../../public/logo_oval_filled.svg"
+export const meta = ({data}) => {
+    return [
+        {title: `${data.title} | Rachel Lopez Photograph`}
+    ];
+};
+
 
 export async function loader({request, params, context}) {
     const {handle: pgHandle} = params;
@@ -53,7 +58,6 @@ export async function loader({request, params, context}) {
             gallery["logo"] = item.reference.image
         }
 
-
     })
   
     if (!gallery.title) {
@@ -67,19 +71,20 @@ export async function loader({request, params, context}) {
 const Galleries = () => {
     const matches = useMatches();
     const data = matches[1].data
-    console.log(data)
 
     const renderImages = () => {
         return (
             <div className={`flex flex-wrap`}>
                 {
                     data.images.map((img, idx) => (
-                        <Image data={img.image} className={`object-cover mb-2`} key={idx} width={'50%'} sizes='' aspectRatio='2/1.55'/>
+                        <Image data={img.image} className={`object-cover mb-2`} key={idx} width={'50%'} sizes="(min-width: 45em) 50vw, 100vw" aspectRatio='2/1.55'/>
                     ))
                 }
             </div>
         )
     }
+
+    
     return (
         <div className='px-6 pb-8 bg-white'>
             <span className="pt-12 mb-3 flex col items-center">
@@ -89,8 +94,8 @@ const Galleries = () => {
             <Description styles="mb-6">{data.description}</Description>
             {renderImages()}
             <nav className='flex justify-between items-center'>
-                <StyledLinkButton to={`/`}><ArrowBackIosIcon style={{width: '10px'}} />Home</StyledLinkButton>
-                <StyledLinkButton to={`/pages/${data.to_page}`}>Book A Package<ArrowForwardIosIcon style={{width: '10px'}} /></StyledLinkButton>
+                <StyledLinkButton to={`/`}><ArrowBackIosIcon style={{width: '10px', height: 'auto'}} />Home</StyledLinkButton>
+                <StyledLinkButton to={`/pages/${data.to_page}`}>Book A Package<ArrowForwardIosIcon style={{width: '10px', height: 'auto'}} /></StyledLinkButton>
             </nav>
         </div>
     )

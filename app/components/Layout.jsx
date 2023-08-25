@@ -13,7 +13,7 @@ export function meta() {
 export function Layout({children}) {
 //   const data = useLoaderData();
   const data = useMatches();
-  const showHeaderAndFooter = !data[0].params.handle ? true : false;
+  const showHeaderAndFooter = data[1].pathname == "/" ? true : false;
 
 
   return (

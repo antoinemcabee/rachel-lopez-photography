@@ -29,25 +29,33 @@ export async function loader({context}) {
 
 const Homepage = () => {
   const { home_hero, headline_content, galleryNodes, testimonials, about_content } = useLoaderData();
+  
+  const aboutData = () => {
+    let obj = {}
 
-  // const aboutData = () => {
-  //   let obj = {}
-  //   for (let item in about_content) {
-  //     if (item.key === "content") {
-  //       obj['image'] = item.reference.image
-  //     } else if (item.key === "description_primary") {
-  //       obj['descPrimary'] = item.value
-  //     } else if (item.key === "description_secondary") {
-  //       obj['descSecondary'] = item.value
-  //     } else if (item.key === "subtitle") {
-  //       obj['subtitle'] = item.value
-  //     } else if (item.key === "title") {
-  //       obj['title'] = item.value
-  //     } else if (item.key === "to_page") {
-  //       obj['to_page'] = item.reference.handle
-  //     }
-  //   }
-  // }
+    about_content.forEach((item) => {
+      if (item.key === "content") {
+        obj['image'] = item.reference.image
+      }
+      if (item.key === "description_primary") {
+        obj['descPrimary'] = item.value
+      }
+      if (item.key === "description_secondary") {
+        obj['descSecondary'] = item.value
+      }
+      if (item.key === "subtitle") {
+        obj['subtitle'] = item.value
+      }
+      if (item.key === "title") {
+        obj['title'] = item.value
+      }
+      if (item.key === "to_page") {
+        obj['to_page'] = item.reference.handle
+      }
+    })
+
+    return obj
+  }
 
 
   
@@ -59,7 +67,7 @@ const Homepage = () => {
     
     return (
       <>
-        <Image data={image.reference.image} width={300} className='opacity-10 absolute'/>
+        <Image data={image.reference.image} width={300} className='opacity-10 absolute' sizes="(min-width: 45em) 50vw, 100vw"/>
         <div className="w-full h-full flex justify-center items-center flex-col ">
           <h2 className='text-white w-full text-[2.75rem] text-center'>{title.value}</h2> 
           <p className='text-white w-full text-sm text-center uppercase'>{subtitle.value}</p>
@@ -79,7 +87,7 @@ const Homepage = () => {
       <div key={title+to_page.handle} className={`w-full h-full pb-8 z-10 ${even ? 'bg-white' : 'bg-[#F5F3EC]'}`}>
         <ImageArch img={img} mt={2}/>
         <div className='px-6 flex flex-col'>
-          <h3 className='mt-8 text-3xl uppercase self-end'>{title}</h3>
+          <StyledTitle style="self-end mt-8 uppercase">{title}</StyledTitle>
           <p className='text-justify text-sm'>{description}</p>
           <StyledLinkButton to={`/galleries/${to_page}`}>Gallery</StyledLinkButton>
         </div>
@@ -107,7 +115,7 @@ const Homepage = () => {
   return (
     <div>
       <div className="h-[85vh] z-10 relative">
-        <Image loading='lazy' fit='cover' className="h-full object-cover" data={home_hero[0].references.nodes[0].image}/>
+        <Image loading='lazy' fit='cover' className="h-full object-cover" data={home_hero[0].references.nodes[0].image} sizes="(min-width: 45em) 50vw, 100vw"/>
       </div>
       <div className='px-6 h-80 bg-[#957152] w-full flex justify-center items-center relative'>
         {renderHeadlineContent()}
@@ -119,7 +127,7 @@ const Homepage = () => {
         <Carousel items={renderTestimonials()}/>
       </div>
       <div>
-        <About data={{}} />
+        <About data={aboutData()} />
       </div>
     </div>
   );
@@ -128,8 +136,12 @@ const Homepage = () => {
 export default transition(Homepage);
 
 
-export const StyledLinkButton = ({ children, to }) => (
-  <Link to={`${to}`} prefetch="intent" className='text-[.65rem] mt-8 w-fit border-b-[0.5px] border-[#707070] italic'>{ children }</Link>
+export const StyledLinkButton = ({ children, to, styles }) => (
+  <Link to={`${to}`} prefetch="intent" className={`text-[.65rem] ${styles} mt-8 w-fit border-b-[0.5px] border-[#707070] italic `}>{ children }</Link>
+)
+
+export const StyledTitle = ({ children, style }) => (
+  <h3 className={`text-3xl ${style}`}>{ children }</h3>
 )
 
 
@@ -239,6 +251,8 @@ const ABOUT_QUERY =`#graphql
               id
               image {
                 url
+                altText
+                id
               }
             }
             ...on Page {

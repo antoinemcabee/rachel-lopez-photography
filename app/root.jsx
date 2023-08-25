@@ -10,8 +10,16 @@ import {
 import styles from './styles/app.css';
 import favicon from '../public/favicon.svg';
 import {Layout} from './components/Layout';
-import { AnimatePresence } from 'framer-motion';
 
+
+export const handle = {
+  seo: {
+    title: 'Rachel Lopez Photography',
+    titleTemplate: '%s - Rachel Lopez Photography',
+    description:
+      'Rachel Lopez Photography | Weddings & Families',
+  },
+};
 
 export const links = () => {
   return [
@@ -46,13 +54,11 @@ export default function App() {
         <Links />
       </head>
       <body>
-      <AnimatePresence mode='wait'>
         <Layout logo={name}>
           <Outlet />
         </Layout>
         <ScrollRestoration />
         <Scripts />
-        </AnimatePresence>
       </body>
     </html>
   );
