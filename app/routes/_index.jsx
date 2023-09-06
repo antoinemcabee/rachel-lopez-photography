@@ -123,7 +123,7 @@ const Homepage = () => {
       <div className='flex justify-center items-center flex-col relative'>
         {renderFeaturedGalleries()}
       </div>
-      <div className=''>
+      <div className=' '>
         <Carousel items={renderTestimonials()}/>
       </div>
       <div>
