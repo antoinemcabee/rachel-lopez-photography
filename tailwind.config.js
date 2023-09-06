@@ -5,6 +5,9 @@ import typographyPlugin from '@tailwindcss/typography';
 export default {
   content: ['./app/**/*.{js,ts,jsx,tsx}'],
   plugins: [formsPlugin, typographyPlugin],
+  fontFamily: {
+    sans: ['Nesans', 'Futura', 'sans-serif'],
+  },
 };
 
 
