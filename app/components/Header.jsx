@@ -1,15 +1,14 @@
 import {Await, NavLink, useMatches} from '@remix-run/react';
 import {Suspense} from 'react';
+import { Image } from '@shopify/hydrogen';
 
 export function Header({header, isLoggedIn, cart}) {
   const {shop, menu} = header;
   return (
-    <header className="header">
-      <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
-        <strong>{shop.name}</strong>
+    <header className="header z-50">
+      <NavLink prefetch="intent" to="/" end>
+        <Image className='absolute ml-6 mt-4' data={shop.brand.logo.image} width={150} />
       </NavLink>
-      <HeaderMenu menu={menu} viewport="desktop" />
-      <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
     </header>
   );
 }
@@ -33,7 +32,6 @@ export function HeaderMenu({menu, viewport}) {
           end
           onClick={closeAside}
           prefetch="intent"
-          style={activeLinkStyle}
           to="/"
         >
           Home
@@ -55,7 +53,6 @@ export function HeaderMenu({menu, viewport}) {
             key={item.id}
             onClick={closeAside}
             prefetch="intent"
-            style={activeLinkStyle}
             to={url}
           >
             {item.title}
@@ -66,15 +63,10 @@ export function HeaderMenu({menu, viewport}) {
   );
 }
 
-function HeaderCtas({isLoggedIn, cart}) {
+function HeaderCtas() {
   return (
     <nav className="header-ctas" role="navigation">
-      <HeaderMenuMobileToggle />
-      <NavLink prefetch="intent" to="/account" style={activeLinkStyle}>
-        {isLoggedIn ? 'Account' : 'Sign in'}
-      </NavLink>
-      <SearchToggle />
-      <CartToggle cart={cart} />
+      {/* <HeaderMenuMobileToggle /> */}
     </nav>
   );
 }
@@ -87,26 +79,7 @@ function HeaderMenuMobileToggle() {
   );
 }
 
-function SearchToggle() {
-  return <a href="#search-aside">Search</a>;
-}
 
-function CartBadge({count}) {
-  return <a href="#cart-aside">Cart {count}</a>;
-}
-
-function CartToggle({cart}) {
-  return (
-    <Suspense fallback={<CartBadge count={0} />}>
-      <Await resolve={cart}>
-        {(cart) => {
-          if (!cart) return <CartBadge count={0} />;
-          return <CartBadge count={cart.totalQuantity || 0} />;
-        }}
-      </Await>
-    </Suspense>
-  );
-}
 
 const FALLBACK_HEADER_MENU = {
   id: 'gid://shopify/Menu/199655587896',
