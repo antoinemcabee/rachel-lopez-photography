@@ -64,8 +64,6 @@ const Contact = ({ data }) => {
                 return <FormCalendar title={field.name} key={field.name}/>
             if (field.displayType == "textBox") 
                 return <FormTextBox title={field.name} styles={{input: "w-full h-12 focus:outline-none focus:border-b-[#9D9686] focus:ring-0 text-[.65rem] text-[#707070] p-0 p-b-2"}} key={field.name}/>
-            
-            
         })
 
     }
