@@ -1,6 +1,6 @@
 body {
   /* font-family: 'Futura', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Open Sans', 'Helvetica Neue', sans-serif; */
-  font-family: 'Futura';
+  font-family: Futura;
   margin: 0;
   padding: 0;
 }
@@ -13,7 +13,7 @@ p {
 }
 
 h1 {
-  font-family: 'Nesans';
+  font-family: Nesans;
   font-size: 1.6rem;
   font-weight: 700;
   line-height: 1.4;
@@ -22,7 +22,7 @@ h1 {
 }
 
 h2 {
-  font-family: 'Nesans';
+  font-family: Nesans;
   font-size: 1.2rem;
   font-weight: 700;
   line-height: 1.4;
@@ -30,13 +30,13 @@ h2 {
 }
 
 h4 {
-  font-family: 'Nesans';
+  font-family: Nesans;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
 }
 
 h5 {
-  font-family: 'Nesans';
+  font-family: Nesans;
   margin-bottom: 1rem;
   margin-top: 0.5rem;
 }
