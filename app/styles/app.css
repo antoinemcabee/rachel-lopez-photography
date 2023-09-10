@@ -9,7 +9,7 @@
     font-style: normal;
     font-display: swap;
     font-weight: 400;
-    src: url('../public/fonts/futura_book.ttf')
+    src: url('../../public/fonts/futura_book.ttf')
     format('truetype');
 }
 
@@ -18,7 +18,7 @@
     font-style: normal;
     font-display: swap;
     font-weight: 200;
-    src: url('../public/fonts/nesans.ttf')
+    src: url('../../public/fonts/nesans.ttf')
     format('truetype');
 }
 
